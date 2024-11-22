@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class ItemRepositoryImpl implements ItemRepository {
-    Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>(); // Добавлен private final к полю items
     private long currentId = 1;
 
     @Override
