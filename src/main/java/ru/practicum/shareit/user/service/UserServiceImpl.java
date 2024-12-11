@@ -3,16 +3,18 @@ package ru.practicum.shareit.user.service;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -25,17 +27,17 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Email не может быть пустым");
         }
 
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ValidationException("Пользователь с таким email уже существует");
         }
 
-        User createdUser = userRepository.createUser(user);
+        User createdUser = userRepository.save(user);
         return UserMapper.toUserDto(createdUser);
     }
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        User existingUser = userRepository.getUserById(userId)
+        User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с таким ID не найден"));
 
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
@@ -43,33 +45,33 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
-            if (userRepository.existsByEmail(userDto.getEmail()) &&
+            if (userRepository.findByEmail(userDto.getEmail()).isPresent() &&
                     !existingUser.getEmail().equals(userDto.getEmail())) {
                 throw new ValidationException("Пользователь с таким email уже существует");
             }
             existingUser.setEmail(userDto.getEmail());
         }
 
-        userRepository.updateUser(existingUser);
+        userRepository.save(existingUser);
         return UserMapper.toUserDto(existingUser);
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        return userRepository.getUserById(userId)
+        return userRepository.findById(userId)
                 .map(UserMapper::toUserDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден"));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userRepository.getAllUsers().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(Long userId) {
-        userRepository.deleteUser(userId);
+        userRepository.deleteById(userId);
     }
 }
