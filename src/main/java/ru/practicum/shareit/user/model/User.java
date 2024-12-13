@@ -19,6 +19,6 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;        // имя или логин пользователя
 
-    @Column(name= "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;       // адрес электронной почты (два пользователя не могут иметь одинаковый email).
 }
