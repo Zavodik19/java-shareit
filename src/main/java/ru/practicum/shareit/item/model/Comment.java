@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +28,9 @@ public class Comment {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;                // Автор отзыва
 
+    @Column(name = "text", nullable = false)
     private String text;                // Текст отзыва
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;      // Дата создания отзыва
-
 }
