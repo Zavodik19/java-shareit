@@ -1,10 +1,13 @@
 package ru.practicum.shareit.booking.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE) // Добавлен запрет на создание экземпляров этого класса
 public class BookingMapper {
 
     public static BookingDto toBookingDto(Booking booking) {

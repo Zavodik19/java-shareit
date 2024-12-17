@@ -31,23 +31,17 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
-    public BookingDto createBooking(Long userId, BookingCreateDto bookingCreateDto) {
+    public BookingDto createBooking(Long userId, BookingCreateDto bookingCreateDto) { // Убрана часть ручных проверок
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         Item item = itemRepository.findById(bookingCreateDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Предмет не найден"));
 
-        if (bookingCreateDto.getStart() == null || bookingCreateDto.getEnd() == null ||
-                !bookingCreateDto.getStart().isBefore(bookingCreateDto.getEnd())) {
-            throw new ValidationException("Неверное время бронирования");
-        }
-        if (bookingCreateDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Время бронирования не может быть в прошлом");
-        }
         if (item.getOwner().getId().equals(userId)) {
             throw new ValidationException("Нельзя бронировать собственный предмет");
         }
+
         if (!item.getAvailable()) {
             throw new ValidationException("Предмет недоступен для бронирования");
         }
